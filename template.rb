@@ -21,7 +21,7 @@ end
 get "#{repo_url}/config/locales/ja.yml", "config/locales/ja.yml"
 
 gsub_file 'config/database.yml',
-  /^  password:$/, "  password: ENV['MYSQL_PASSWORD']"
+  /^  password:$/, "  password: <%= ENV.fetch('MYSQL_PASSWORD') %>"
 
 
 insert_into_file "config/application.rb",%(
