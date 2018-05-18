@@ -37,6 +37,7 @@ end
 
 
 after_bundle do
+  remove_file 'config/puma.rb'
   get "#{repo_url}/config/puma.rb", "config/puma.rb"
 
   insert_into_file "config/application.rb",%(
@@ -49,6 +50,8 @@ after_bundle do
       end
     end
   ),after: "class Application < Rails::Application\n"
+
+  rake 'db:create'
 
   git :init
   git add: "."
