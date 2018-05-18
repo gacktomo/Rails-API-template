@@ -37,21 +37,7 @@ end
 
 
 after_bundle do
-  gsub_file 'config/puma.rb',
-    /^port        ENV.fetch\("PORT"\) { 3000 }$/, 
-"#port        ENV.fetch(\"PORT\") { 3000 }
-
-daemonize true
-pidfile 'tmp/pids/puma.pid'
- 
-if 'development' == ENV.fetch('RAILS_ENV') { 'development' }
-  ssl_bind '0.0.0.0', '#{port}', {
-    key: '/etc/letsencrypt/live/docoiku.com/privkey.pem',
-    cert: '/etc/letsencrypt/live/docoiku.com/fullchain.pem',
-    verify_mode: 'none'
-  }
-end
-"
+  get "#{repo_url}/config/puma.rb", "config/puma.rb"
 
   insert_into_file "config/application.rb",%(
     Rails.application.config.middleware.insert_before 0, Rack::Cors do
