@@ -5,7 +5,6 @@ repo_url = "https://raw.github.com/gacktomo/Rails-API-template/master"
 gem 'rack-cors'
 gem 'puma'
 gem_group :development, :test do
-  gem 'bullet'       #for N+1 problem
   gem 'pry-rails'    # rails cの対話式コンソールがirbの代わりにリッチなpryになる
   gem 'pry-doc'      # pry中に show-source [method名] でソース内を読める
   gem 'pry-byebug'   # binding.pryをソースに記載すると、ブレイクポイントとなりデバッグが可能になる
@@ -17,7 +16,6 @@ gem_group :development, :test do
   gem 'better_errors'     # 開発中のエラー画面をリッチにする
   gem 'binding_of_caller' # 開発中のエラー画面にさらに変数の値を表示する
   gem 'awesome_print'     # Rubyオブジェクトに色をつけて表示して見やすくなる
-  gem 'quiet_assets'      # ログのassetsを表示しないようにし、ログを見やすくしてくれる
 end
 
 get "#{repo_url}/config/locales/ja.yml", "config/locales/ja.yml"
