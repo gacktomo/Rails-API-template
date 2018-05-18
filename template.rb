@@ -19,15 +19,22 @@ gem_group :development, :test do
 end
 
 get "#{repo_url}/config/locales/ja.yml", "config/locales/ja.yml"
-
+insert_into_file "config/application.rb",%(
+    config.i18n.default_locale = :ja
+    config.time_zone = 'Tokyo'
+),after: "class Application < Rails::Application\n"
 gsub_file 'config/database.yml',
   /^  password:$/, "  password: <%= ENV.fetch('MYSQL_PASSWORD') %>"
 
+for i in 0..100 do
+  s = TCPServer.open(3000+i)
+  if s.present? then
+    port = s.addr[1]
+    break
+  end
+  s.close
+end
 
-insert_into_file "config/application.rb",%(
-  config.i18n.default_locale = :ja
-  config.time_zone = 'Tokyo'
-),after: "class Application < Rails::Application\n"
 
 after_bundle do
   gsub_file 'config/puma.rb',
@@ -38,7 +45,7 @@ daemonize true
 pidfile 'tmp/pids/puma.pid'
  
 if 'development' == ENV.fetch('RAILS_ENV') { 'development' }
-  ssl_bind '0.0.0.0', '3010', {
+  ssl_bind '0.0.0.0', '#{port}', {
     key: '/etc/letsencrypt/live/docoiku.com/privkey.pem',
     cert: '/etc/letsencrypt/live/docoiku.com/fullchain.pem',
     verify_mode: 'none'
@@ -60,6 +67,5 @@ end
   git :init
   git add: "."
   git commit: %Q{ -m 'Initial commit' }
-
 end
 
