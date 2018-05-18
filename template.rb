@@ -4,7 +4,8 @@ repo_url = "https://raw.github.com/gacktomo/Rails-API-template/master"
 # Gemfile
 gem 'rack-cors'
 gem 'puma'
-group :development, :test do
+gem_group :development, :test do
+  gem 'bullet'       #for N+1 problem
   gem 'pry-rails'    # rails cの対話式コンソールがirbの代わりにリッチなpryになる
   gem 'pry-doc'      # pry中に show-source [method名] でソース内を読める
   gem 'pry-byebug'   # binding.pryをソースに記載すると、ブレイクポイントとなりデバッグが可能になる
@@ -22,7 +23,8 @@ end
 get "#{repo_url}/config/locales/ja.yml", "config/locales/ja.yml"
 
 gsub_file 'config/database.yml',
-  /^  password:$/, "\\0\n  password: ENV['MYSQL_PASSWORD']"
+  /^  password:$/, "  password: ENV['MYSQL_PASSWORD']"
+
 
 insert_into_file "config/application.rb",%(
   config.i18n.default_locale = :ja
@@ -30,9 +32,21 @@ insert_into_file "config/application.rb",%(
 ),after: "class Application < Rails::Application\n"
 
 after_bundle do
-  git :init
-  git add: "."
-  git commit: %Q{ -m 'Initial commit' }
+  gsub_file 'config/puma.rb',
+    /^port        ENV.fetch\("PORT"\) { 3000 }$/, 
+"#port        ENV.fetch(\"PORT\") { 3000 }
+
+daemonize true
+pidfile 'tmp/pids/puma.pid'
+ 
+if 'development' == ENV.fetch('RAILS_ENV') { 'development' }
+  ssl_bind '0.0.0.0', '3010', {
+    key: '/etc/letsencrypt/live/docoiku.com/privkey.pem',
+    cert: '/etc/letsencrypt/live/docoiku.com/fullchain.pem',
+    verify_mode: 'none'
+  }
+end
+"
 
   insert_into_file "config/application.rb",%(
     Rails.application.config.middleware.insert_before 0, Rack::Cors do
@@ -44,6 +58,10 @@ after_bundle do
       end
     end
   ),after: "class Application < Rails::Application\n"
+
+  git :init
+  git add: "."
+  git commit: %Q{ -m 'Initial commit' }
 
 end
 
