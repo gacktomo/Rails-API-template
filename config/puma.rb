@@ -26,8 +26,8 @@ if "development" == ENV.fetch("RAILS_ENV") { "development" }
     end
 
     ssl_bind '0.0.0.0', port, {
-      key: '/etc/letsencrypt/live/docoiku.com/privkey.pem',
-      cert: '/etc/letsencrypt/live/docoiku.com/fullchain.pem',
+      key: '/etc/letsencrypt/live/k-appdev.com/privkey.pem',
+      cert: '/etc/letsencrypt/live/k-appdev.com/fullchain.pem',
       verify_mode: "none"
     }
 
