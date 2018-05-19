@@ -26,19 +26,10 @@ insert_into_file "config/application.rb",%(
 gsub_file 'config/database.yml',
   /^  password:$/, "  password: <%= ENV.fetch('MYSQL_PASSWORD') %>"
 
-for i in 0..100 do
-  s = TCPServer.open(3000+i)
-  if s.present? then
-    port = s.addr[1]
-    break
-  end
-  s.close
-end
-
-
 after_bundle do
   remove_file 'config/puma.rb'
   get "#{repo_url}/config/puma.rb", "config/puma.rb"
+  run "mkdir tmp/pids"
 
   insert_into_file "config/application.rb",%(
     Rails.application.config.middleware.insert_before 0, Rack::Cors do
